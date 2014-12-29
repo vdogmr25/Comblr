@@ -38,23 +38,25 @@ end
 driver = Selenium::WebDriver.for :chrome
 wait = Selenium::WebDriver::Wait.new(:timeout => 10)
 
+# Log in using xpaths
 # Go to tumblr and click on Log In
 driver.navigate.to "https://www.tumblr.com"
-driver.find_element(:link, "Log in").click
+driver.find_element(:xpath, "//*[@id='account_actions_logged_out_dashboard']/div[3]/div/div[2]/a[1]").click
 
 # Wait for log in page to load then input log in information
 wait.until { driver.title.downcase.start_with? "log in" }
-driver.find_element(:id, "signup_email").send_keys(email)
-driver.find_element(:id, "signup_password").send_keys(pass)
-driver.find_element(:class, "login_btn").click
+driver.find_element(:xpath, "//*[@id='signup_email']").send_keys(email)
+driver.find_element(:xpath, "//*[@id='signup_password']").send_keys(pass)
+driver.find_element(:xpath, "//*[@id='signup_forms_submit']/span[4]").click
 
 # If using 2 factor auth, wait for 2 factor auth page to load, then input it.
 if not auth.downcase.eql?('n')
-	wait.until { driver.find_element(:id, "tfa_response_field") }
-	driver.find_element(:id, "tfa_response_field").send_keys(auth)
-	driver.find_element(:class, "login_btn").click
+	wait.until { driver.find_element(:xpath, "//*[@id='tfa_response_field']") }
+	driver.find_element(:xpath, "//*[@id='tfa_response_field']").send_keys(auth)
+	driver.find_element(:xpath, "//*[@id='signup_forms_submit']/span[4]").click
 end
 
+# Start post process by finding id.
 # Click on Text Post
 wait.until { driver.find_element(:id, "new_post_label_text") }
 driver.find_element(:id, "new_post_label_text").click
@@ -62,6 +64,7 @@ driver.find_element(:id, "new_post_label_text").click
 # Wait for test pane to load
 wait.until { driver.find_element(:id, "post_two_ifr") }
 
+# find panes and post via css.
 # Switch to text pane iframe and input text
 driver.switch_to.frame("post_two_ifr")
 wait.until { driver.find_element(:css, "#tinymce") }
